@@ -1,0 +1,90 @@
+---
+title: "Copula2.9"
+author: "biennie"
+date: "2024-12-20"
+output: html_document
+---
+
+#Library
+```{r 1, echo=FALSE, message=FALSE,warning=FALSE}
+
+pkgs <- c("ggplot2","rgl","LaplacesDemon")
+
+invisible(lapply(pkgs, function(pkg) {
+  if (!require(pkg, character.only = TRUE)) {
+    install.packages(pkg, dependencies = TRUE)
+    library(pkg, character.only = TRUE)
+  } else {
+    library(pkg, character.only = TRUE)
+  }
+}))
+```
+# uniform
+```{r}
+
+u <- runif(10000)
+t <- runif(10000)
+
+```
+
+#單變數 常態
+```{r}
+x <- qnorm(u)
+
+plot(density(x))
+```
+
+
+# 多變量 
+
+## ex 2.20
+```{r}
+v <- (u*sqrt(t))/(1-(1-u)*sqrt(t))
+
+x <- 2*u-1
+y <- -1*log(1-v)
+
+cuv <- (u*v)/(u+v-u*v)
+
+joint.density.plot(x,y)
+plot3d(x=x, y=y, z=cuv, size=1, type='p')
+```
+
+## two iid normal
+$$ C(u, v) = u*v $$ 
+
+```{r}
+
+v <- t
+
+x <- qnorm(u)
+y <- qnorm(v)
+
+cuv <- u*v
+
+joint.density.plot(x,y, Title="The joint density of two iid normal.")
+
+plot3d(x, y, cuv)
+```
+
+# Survival
+
+## Clayton
+```{r}
+theta <- 10
+e <- exp(-(log(t)+((1+theta)/theta)*log(u))/(theta+1))
+
+v <- (1 - u^(-1/theta) + e)^(-1*theta)
+
+x <- u^(-1/theta) - 1
+y <- v^(-1/theta) - 1
+
+joint.density.plot(x,y)
+
+# plot3d(x,y,u*v)  #density
+
+c_hat_uv <- (u^(-1/theta) + v^(-1-theta) - 1)^(-theta)
+plot3d(x, y, c_hat_uv) #distribution
+```
+
+
